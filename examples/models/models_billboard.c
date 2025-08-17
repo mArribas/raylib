@@ -2,12 +2,14 @@
 *
 *   raylib [models] example - Drawing billboards
 *
+*   Example complexity rating: [★★★☆] 3/4
+*
 *   Example originally created with raylib 1.3, last time updated with raylib 3.5
 *
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2015-2024 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2015-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -38,19 +40,21 @@ int main(void)
     Vector3 billPositionStatic = { 0.0f, 2.0f, 0.0f };          // Position of static billboard
     Vector3 billPositionRotating = { 1.0f, 2.0f, 1.0f };        // Position of rotating billboard
 
-    // Entire billboard texture, source is used to take a segment from a larger texture.
+    // Entire billboard texture, source is used to take a segment from a larger texture
     Rectangle source = { 0.0f, 0.0f, (float)bill.width, (float)bill.height };
 
     // NOTE: Billboard locked on axis-Y
     Vector3 billUp = { 0.0f, 1.0f, 0.0f };
 
+    // Set the height of the rotating billboard to 1.0 with the aspect ratio fixed
+    Vector2 size = { source.width/source.height, 1.0f };
+
     // Rotate around origin
     // Here we choose to rotate around the image center
-    // NOTE: (-1, 1) is the range where origin.x, origin.y is inside the texture
-    Vector2 rotateOrigin = { 0.0f };
+    Vector2 origin = Vector2Scale(size, 0.5f);
 
     // Distance is needed for the correct billboard draw order
-    // Larger distance (further away from the camera) should be drawn prior to smaller distance.
+    // Larger distance (further away from the camera) should be drawn prior to smaller distance
     float distanceStatic;
     float distanceRotating;
     float rotation = 0.0f;
@@ -81,17 +85,17 @@ int main(void)
                 DrawGrid(10, 1.0f);        // Draw a grid
 
                 // Draw order matters!
-                if (distanceStatic > distanceRotating) 
+                if (distanceStatic > distanceRotating)
                 {
                     DrawBillboard(camera, bill, billPositionStatic, 2.0f, WHITE);
-                    DrawBillboardPro(camera, bill, source, billPositionRotating, billUp, (Vector2) {1.0f, 1.0f}, rotateOrigin, rotation, WHITE);
-                } 
+                    DrawBillboardPro(camera, bill, source, billPositionRotating, billUp, size, origin, rotation, WHITE);
+                }
                 else
                 {
-                    DrawBillboardPro(camera, bill, source, billPositionRotating, billUp, (Vector2) {1.0f, 1.0f}, rotateOrigin, rotation, WHITE);
+                    DrawBillboardPro(camera, bill, source, billPositionRotating, billUp, size, origin, rotation, WHITE);
                     DrawBillboard(camera, bill, billPositionStatic, 2.0f, WHITE);
                 }
-                
+
             EndMode3D();
 
             DrawFPS(10, 10);

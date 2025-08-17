@@ -2,12 +2,14 @@
 *
 *   raylib [models] example - Skybox loading and drawing
 *
+*   Example complexity rating: [★★☆☆] 2/4
+*
 *   Example originally created with raylib 1.8, last time updated with raylib 4.0
 *
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2017-2024 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2017-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -49,7 +51,8 @@ int main(void)
     Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
     Model skybox = LoadModelFromMesh(cube);
 
-    bool useHDR = true;
+    // Set this to true to use an HDR Texture, Note that raylib must be built with HDR Support for this to work SUPPORT_FILEFORMAT_HDR
+    bool useHDR = false;
 
     // Load skybox shader and set required locations
     // NOTE: Some locations are automatically set at shader loading
@@ -67,7 +70,7 @@ int main(void)
     SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]){ 0 }, SHADER_UNIFORM_INT);
 
     char skyboxFileName[256] = { 0 };
-    
+
     if (useHDR)
     {
         TextCopy(skyboxFileName, "resources/dresden_square_2k.hdr");
@@ -113,7 +116,7 @@ int main(void)
                 {
                     // Unload current cubemap texture to load new one
                     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
-                    
+
                     if (useHDR)
                     {
                         // Load HDR panorama (sphere) texture
@@ -121,7 +124,7 @@ int main(void)
 
                         // Generate cubemap from panorama texture
                         skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-                        
+
                         UnloadTexture(panorama);    // Texture not required anymore, cubemap already generated
                     }
                     else
@@ -157,8 +160,6 @@ int main(void)
                 DrawGrid(10, 1.0f);
 
             EndMode3D();
-            
-            //DrawTextureEx(panorama, (Vector2){ 0, 0 }, 0.0f, 0.5f, WHITE);
 
             if (useHDR) DrawText(TextFormat("Panorama image from hdrihaven.com: %s", GetFileName(skyboxFileName)), 10, GetScreenHeight() - 20, 10, BLACK);
             else DrawText(TextFormat(": %s", GetFileName(skyboxFileName)), 10, GetScreenHeight() - 20, 10, BLACK);
@@ -192,7 +193,7 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
     // STEP 1: Setup framebuffer
     //------------------------------------------------------------------------------------------
     unsigned int rbo = rlLoadTextureDepth(size, size, true);
-    cubemap.id = rlLoadTextureCubemap(0, size, format);
+    cubemap.id = rlLoadTextureCubemap(0, size, format, 1);
 
     unsigned int fbo = rlLoadFramebuffer();
     rlFramebufferAttach(fbo, rbo, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_RENDERBUFFER, 0);
@@ -222,7 +223,7 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
     };
 
     rlViewport(0, 0, size, size);   // Set viewport to current fbo dimensions
-    
+
     // Activate and enable texture for drawing to cubemap faces
     rlActiveTextureSlot(0);
     rlEnableTexture(panorama.id);
@@ -231,7 +232,7 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
     {
         // Set the view matrix for the current cube face
         rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_VIEW], fboViews[i]);
-        
+
         // Select the current cubemap face attachment for the fbo
         // WARNING: This function by default enables->attach->disables fbo!!!
         rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X + i, 0);

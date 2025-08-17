@@ -2,6 +2,8 @@
 *
 *   raylib [models] example - Load models M3D
 *
+*   Example complexity rating: [★★☆☆] 2/4
+*
 *   Example originally created with raylib 4.5, last time updated with raylib 4.5
 *
 *   Example contributed by bzt (@bztsrc) and reviewed by Ramon Santamaria (@raysan5)
@@ -13,7 +15,7 @@
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2022-2024 bzt (@bztsrc)
+*   Copyright (c) 2022-2025 bzt (@bztsrc)
 *
 ********************************************************************************************/
 
@@ -117,7 +119,7 @@ int main(void)
                     // without a -1, we would always draw a cube at the origin
                     for (int i = 0; i < model.boneCount - 1; i++)
                     {
-                        // By default the model is loaded in bind-pose by LoadModel().
+                        // By default the model is loaded in bind-pose by LoadModel()
                         // But if UpdateModelAnimation() has been called at least once
                         // then the model is already in animation pose, so we need the animated skeleton
                         if (!animPlaying || !animsCount)
